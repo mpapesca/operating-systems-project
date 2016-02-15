@@ -1,0 +1,117 @@
+
+
+/* S T R U C T   D E F I N I T I O N S */
+
+/* * * * * * * * * * * * * * * * * * * * * * * * *
+
+  TYPEDEF  operation_t
+
+  DISC      This struct is a node for holding the information about a single
+            opertation.
+
+  MEMBERS   id:  Unique identifying key of each operation per job.
+
+            type:  Type of operation being performed whether CPU or I/O.
+
+            duration: How much time the operation will require to be completed.
+
+            next: The pointer to the next operation in the list of operation.
+
+ * * * * * * * * * * * * * * * * * * * * * * * * */
+typedef struct operation {
+
+  int32_t id;
+  int32_t type;
+  int32_t duration;
+
+  struct operation *next;
+
+}operation_t;
+
+
+/* * * * * * * * * * * * * * * * * * * * * * * * *
+
+  TYPEDEF  reg_t
+
+  DISC      This struct is a node for holding the information about a single
+            opertation.
+
+  MEMBERS   id:  Unique identifying key of each operation per job.
+
+            type:  Type of operation being performed whether CPU or I/O.
+
+            duration: How much time the operation will require to be completed.
+
+            next: The pointer to the next operation in the list of operation.
+
+ * * * * * * * * * * * * * * * * * * * * * * * * */
+typedef struct reg {
+
+  int32_t id;
+
+  struct reg *next;
+
+}reg_t;
+/* * * * * * * * * * * * * * * * * * * * * * * * *
+
+  TYPEDEF  job_t
+
+  DISC      This struct is a node for holding the information about a single job.
+
+  MEMBERS   id:  Unique identifying key of each job.
+
+            process_state:  Current state of the job.
+                0 - waiting
+                1 - ready
+                2 - busy
+
+            process_num: ** may want to remove this item **
+
+            program_count:  Current position in the program. Used for returning to
+                            the program later.
+
+            total_mem:  Total memory used by the job.
+
+            min_mem: The minimum possible memory required by the job to operate.
+
+            registers:  An array of the registers used by the job.
+
+            operations: The different operations performed by the job with a
+                        specification of what type of operation is being
+                        performed (CPU, I/O).
+
+            open_files: The files currently being accessed by the job.
+
+            next: The pointer to the next job in the list of jobs.
+
+ * * * * * * * * * * * * * * * * * * * * * * * * */
+typedef struct job {
+
+  int32_t id;
+  int32_t process_state;
+  int32_t process_num;
+  int32_t prog_count;
+  int32_t total_mem;
+  int32_t min_mem;
+  int32_t num_regs;
+  reg_t *registers;
+  int32_t num_ops;
+  operation_t * operations;
+  uint8_t ** open_files;
+
+  struct job *next;
+
+}job_t;
+
+
+/* G E N E R A L   D E F I N I T I O N S */
+
+#define MOVE_FILE "cp docs/job_info_bu.txt docs/job_info.txt"
+#define FILE_PATH "docs/job_info.txt"
+#define BUSY 0
+#define READY 1
+#define WAITING 2
+#define JOBS 0
+#define READY 1
+#define WAITING 2
+#define IO 3
