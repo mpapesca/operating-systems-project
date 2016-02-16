@@ -1,6 +1,4 @@
-
-
-/* S T R U C T   D E F I N I T I O N S */
+/*** S T R U C T   D E F I N I T I O N S ***/
 
 /* * * * * * * * * * * * * * * * * * * * * * * * *
 
@@ -104,14 +102,25 @@ typedef struct job {
 }job_t;
 
 
-/* G E N E R A L   D E F I N I T I O N S */
+/*** G E N E R A L   D E F I N I T I O N S ***/
 
+/* F I L E   O P E R A T I O N S */
 #define MOVE_FILE "cp docs/job_info_bu.txt docs/job_info.txt"
 #define FILE_PATH "docs/job_info.txt"
+
+/* P R O C E S S   S T A T E S */
 #define BUSY 0
 #define READY 1
 #define WAITING 2
+#define COMPLETE 3
+
+/* L I S T S */
 #define JOBS 0
 #define READY 1
 #define WAITING 2
 #define IO 3
+
+/* O P E R A T I O N   T Y P E S */
+#define CPU_OP 0
+#define IO_OP 1
+#define OP_FIN 2

@@ -13,6 +13,11 @@
 
 /* F U N C T I O N S */
 
+void loadjobfile(void) {
+  system(MOVE_FILE);
+  printf("START PROGRAM:\n\n");
+}
+
 /* * * * * * * * * * * * * * * * * * * * * * * * *
 
   FUCTION:  createjoblist(int)
@@ -214,7 +219,7 @@ void appendjobtolist(job_t * head, int *data, int list, int *ops, int *regs) {
 
   current->next = malloc(sizeof(job_t));
   current->next->id = data[0];
-  current->next->process_state = 0;
+  current->next->process_state = WAITING;
   current->next->prog_count = 0;
   current->next->total_mem = data[1];
   current->next->min_mem = data[2];
@@ -258,6 +263,40 @@ void appendjobtolist(job_t * head, int *data, int list, int *ops, int *regs) {
   }
 
   current->next->next = NULL;
+}
+
+void loadjobs(void) {
+
+  int32_t i, j, data[10],registers[20], operations[30];
+  int8_t c, buff[20];
+
+  while(1) {
+    if( (job_file = fopen(FILE_PATH, "r")) != NULL) {
+      for(i = 0; i < 4; i++) {
+        // fscanf(job_file, "%s %d %s %d %s %d %s %d %s %d", buff, &data[0], buff, &data[1], buff, &data[2], buff, &data[3], buff, &data[4]);
+        fscanf(job_file, "%s %d %s %d %s %d %s %d %s", buff, &data[0], buff, &data[1], buff, &data[2], buff, &data[3], buff);
+
+        for( j = 0; j < data[3]; j++) {
+          fscanf(job_file, "%d", &registers[j]);
+        }
+
+        fscanf(job_file, "%s %d %s", buff, &data[4], buff);
+
+        for( j = 0; j < data[4]; j++) {
+          fscanf(job_file, "%d %d", &operations[2*j], &operations[2*j + 1]);
+        }
+
+        appendjobtolist(JOBS_LIST, data, JOBS, operations, registers);
+
+      }
+
+      if(remove(FILE_PATH) == -1) {
+        printf("ERROR DELETING FILE: %s\n", FILE_PATH);
+      }
+    } else {
+      break;
+    }
+  }
 }
 //
 // /* * * * * * * * * * * * * * * * * * * * * * * * *
@@ -437,6 +476,19 @@ void printlist(job_t * head) {
 
   while(current != NULL) {
     printf("ID: %d\n",current->id);
+    printf("PROCESS STATE: ");
+
+    switch(current->process_state) {
+      case WAITING:
+        printf("WAITING\n");
+        break;
+      case READY:
+        printf("READY\n");
+        break;
+      case BUSY:
+        printf("BUSY\n");
+        break;
+    }
     printf("TOTAL MEMORY: %d\n",current->total_mem);
     printf("MINIMUM MEMORY: %d\n",current->min_mem);
 
@@ -462,7 +514,7 @@ void printlist(job_t * head) {
     } else {
       printf("NONE");
     }
-    printf("\n");
+    printf("\n\n");
 
     current = current->next;
   }
