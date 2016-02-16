@@ -18,3 +18,8 @@ int8_t c;
 
 /* F I L E S */
 FILE * job_file;
+
+/* T I M E */
+time_t current_time;
+time_t previous_time;
+time_t op_finish_time;

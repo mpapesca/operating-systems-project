@@ -123,6 +123,27 @@ void longtermscheduler(void) {
 /**
  * [shorttermscheduler description]
  */
-void shorttermscheduler(void) {
+void shorttermscheduler(void) { //Still needs a lot of work.
+  
+
+  if(READY_Q == NULL) {
+    return;
+  }
+
+  int elapsed = 0;
+
+  time ( &current_time );
+
+
+  current = READY_Q;
+
+  op_current = current->operations;
+
+  while(elapsed < current->prog_count) {
+    elapsed += op_current->duration;
+    op_current = op_current->next;
+  }
+
+
 
 }
