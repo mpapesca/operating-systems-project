@@ -463,11 +463,11 @@ void loadjobs(void) {
  * * * * * * * * * * * * * * * * * * * * * * * * */
 void printlist(job_t * head) {
 
-  if(head == NULL) {
-    current = JOBS_LIST;
-  } else {
+  // if(head == NULL) {
+    // current = JOBS_LIST;
+  // } else {
     current = head;
-  }
+  // }
 
   if(current == NULL) {
     printf("The list is empty\n");

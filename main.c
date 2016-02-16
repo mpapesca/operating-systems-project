@@ -36,6 +36,7 @@ int main(void) {
   //
   printf("READY QUEUE\n");
   printlist(READY_Q);
+
   printf("IO QUEUE\n");
   printlist(IO_Q);
   // // shorttermscheduler();
