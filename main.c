@@ -21,27 +21,19 @@ int main(void) {
   printf("JOB LIST\n");
   printlist(JOBS_LIST);
 
-  // while(1) {
-  // /**
-  //  * TODO: Add a long term scheduler to add jobs to READY_Q or IO_Q
-  //  *
-  //  *
-  //  *
-  //  * TODO: Add a short term scheduler to run through READY_Q
-  //  *
-  //  *
-  //  */
-  //
+  while(1) {
+
   longtermscheduler();
   //
-  printf("READY QUEUE\n");
-  printlist(READY_Q);
+  // printf("READY QUEUE\n");
+  // printlist(READY_Q);
 
-  printf("IO QUEUE\n");
-  printlist(IO_Q);
-  // // shorttermscheduler();
+  // printf("IO QUEUE\n");
+  // printlist(IO_Q);
+
+  shorttermscheduler();
   //
-  // }
+  }
 
   return 0;
 }

@@ -25,16 +25,18 @@ void longtermscheduler(void) {
   job_t * queue_tail;
   reg_t * queue_reg;
   operation_t * queue_op;
+  int found = 0;
 
 
   current = JOBS_LIST;
 
   while(current != NULL) {
     if(current->process_state == WAITING) {
+      found = 1;
 
       switch(nextoperation(current)) {
         case CPU_OP:
-        printf("CPU\n");
+        // printf("CPU\n");
           current->process_state = READY;
 
           if(READY_Q == NULL) {
@@ -117,6 +119,10 @@ void longtermscheduler(void) {
     }
     current = current->next;
   }
+  if(found){
+    printf("JOBS LIST 0\n");
+    printlist(JOBS_LIST);
+  }
 }
 
 
@@ -124,7 +130,7 @@ void longtermscheduler(void) {
  * [shorttermscheduler description]
  */
 void shorttermscheduler(void) { //Still needs a lot of work.
-  
+
 
   if(READY_Q == NULL) {
     return;
@@ -134,15 +140,64 @@ void shorttermscheduler(void) { //Still needs a lot of work.
 
   time ( &current_time );
 
+  if(READY_Q->process_state == READY) {
 
-  current = READY_Q;
+    op_current = READY_Q->operations;
+    elapsed = op_current->duration;
 
-  op_current = current->operations;
+    while(elapsed <= READY_Q->prog_count && op_current != NULL) {
+      elapsed += op_current->duration;
+      op_current = op_current->next;
+    }
 
-  while(elapsed < current->prog_count) {
-    elapsed += op_current->duration;
-    op_current = op_current->next;
+    if(op_current == NULL) {
+      READY_Q->process_state = COMPLETE;
+      current = JOBS_LIST;
+      while(current->id != READY_Q->id) {
+        current = current->next;
+      }
+      current->process_state = COMPLETE;
+      removehead(READY);
+    }
+
+    if(elapsed > READY_Q->prog_count) {
+      printf("NEW OPERTATION\n");
+      cpu_op_finish_time = current_time + op_current->duration;
+      previous_time = op_current->duration;
+      READY_Q->process_state = ACTIVE;
+      current = JOBS_LIST;
+      while(current->id != READY_Q->id) {
+        current = current->next;
+      }
+      current->process_state = ACTIVE;
+      printf("JOBS LIST 1\n\n");
+      printlist(JOBS_LIST);
+    }
+
   }
+  if(READY_Q->process_state == ACTIVE) {
+
+    if(current_time > cpu_op_finish_time) {
+      printf("OPERATION FINISHED\n");
+      READY_Q->process_state = WAITING;
+      current = JOBS_LIST;
+      while(current->id != READY_Q->id) {
+        current = current->next;
+      }
+      current->process_state = WAITING;
+      current->prog_count += previous_time;
+      removehead(READY);
+      printf("JOBS LIST 2\n");
+      printlist(JOBS_LIST);
+    }
+
+  }
+
+
+  // current = READY_Q;
+
+  // op_current = current->operations;
+
 
 
 

@@ -488,7 +488,14 @@ void printlist(job_t * head) {
       case BUSY:
         printf("BUSY\n");
         break;
+      case ACTIVE:
+        printf("ACTIVE\n");
+        break;
+      case COMPLETE:
+        printf("COMPLETE\n");
+        break;
     }
+    printf("PROGRAM COUNT: %d\n",current->prog_count);
     printf("TOTAL MEMORY: %d\n",current->total_mem);
     printf("MINIMUM MEMORY: %d\n",current->min_mem);
 
@@ -520,30 +527,59 @@ void printlist(job_t * head) {
   }
   printf("\n");
 }
-//
-// /* * * * * * * * * * * * * * * * * * * * * * * * *
-//
-//   FUCTION:  removehead(void)
-//
-//   DISC:     This function is meant to remove the head node of the linked list.
-//
-//   ARGS:     None.
-//
-//   RETURN:   Return 1 for success and return 0 for failure.
-//
-//  * * * * * * * * * * * * * * * * * * * * * * * * */
-// int removehead(void) {
-//   if(listempty()) {
-//     return 0;
-//   }
-//   job_t * temp = malloc(sizeof(job_t));
-//
-//   temp = head;
-//   head = temp -> next;
-//   free(temp);
-//
-//   return 1;
-// }
+
+/* * * * * * * * * * * * * * * * * * * * * * * * *
+
+  FUCTION:  removehead(void)
+
+  DISC:     This function is meant to remove the head node of the linked list.
+
+  ARGS:     None.
+
+  RETURN:   Return 1 for success and return 0 for failure.
+
+ * * * * * * * * * * * * * * * * * * * * * * * * */
+int removehead(int list) {
+
+job_t * temp;
+// job_t * head;
+
+switch(list) {
+  case JOBS:
+    if(JOBS_LIST == NULL) {
+      printf("NO JOBS IN LIST\n");
+      return 0;
+    }
+    printf("REMOVING JOBS HEAD\n");
+    temp = JOBS_LIST;
+    JOBS_LIST = temp->next;
+    free(temp);
+    break;
+  case READY:
+    if(READY_Q == NULL) {
+      printf("NO JOBS IN READY Q\n");
+      return 0;
+    }
+    printf("REMOVING READY HEAD\n");
+    temp = READY_Q;
+    READY_Q = temp->next;
+    free(temp);
+    break;
+  case IO:
+    if(IO_Q == NULL) {
+      printf("NO JOBS IN IO Q\n");
+      return 0;
+    }
+    printf("REMOVING IO HEAD\n");
+    temp = IO_Q;
+    IO_Q = temp->next;
+    free(temp);
+    break;
+}
+
+
+  return 1;
+}
 //
 // /* * * * * * * * * * * * * * * * * * * * * * * * *
 //

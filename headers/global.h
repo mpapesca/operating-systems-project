@@ -21,5 +21,6 @@ FILE * job_file;
 
 /* T I M E */
 time_t current_time;
-time_t previous_time;
-time_t op_finish_time;
+int previous_time;
+time_t cpu_op_finish_time;
+time_t io_op_finish_time;

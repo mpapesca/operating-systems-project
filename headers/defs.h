@@ -113,6 +113,7 @@ typedef struct job {
 #define READY 1
 #define WAITING 2
 #define COMPLETE 3
+#define ACTIVE 4
 
 /* L I S T S */
 #define JOBS 0
