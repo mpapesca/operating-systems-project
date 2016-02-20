@@ -8,6 +8,7 @@
 #include "headers/defs.h"
 #include "headers/global.h"
 #include "headers/node_operations.h"
+#include "headers/prog_operations.h"
 #include "headers/scheduler.h"
 
 
@@ -16,23 +17,31 @@
 int main(void) {
 
   loadjobfile();
-
   loadjobs();
+
+  printf("--------------------------------------------------------------------\n");
   printf("JOB LIST\n");
   printlist(JOBS_LIST);
 
+  printf("READY QUEUE\n");
+  printlist(READY_Q);
+
+  printf("IO QUEUE\n");
+  printlist(IO_Q);
+  printf("--------------------------------------------------------------------\n");
+
   while(1) {
+    // printf("main1\n");
+    longtermscheduler();
 
-  longtermscheduler();
-  //
-  // printf("READY QUEUE\n");
-  // printlist(READY_Q);
+    // printf("main2\n");
+    shorttermscheduler();
 
-  // printf("IO QUEUE\n");
-  // printlist(IO_Q);
+    // printf("main3\n");
+    opcpu();
 
-  shorttermscheduler();
-  //
+    // printf("main4\n");
+    opio();
   }
 
   return 0;

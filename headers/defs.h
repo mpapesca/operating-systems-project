@@ -20,6 +20,7 @@ typedef struct operation {
 
   int32_t id;
   int32_t type;
+  bool status;
   int32_t duration;
 
   struct operation *next;

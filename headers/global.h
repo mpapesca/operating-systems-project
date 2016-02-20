@@ -24,3 +24,8 @@ time_t current_time;
 int previous_time;
 time_t cpu_op_finish_time;
 time_t io_op_finish_time;
+
+/* P R O G R A M   C O U N T E R S */
+
+uint64_t CURRENT_IO_COUNT = 0;
+uint64_t CURRENT_CPU_COUNT = 0;

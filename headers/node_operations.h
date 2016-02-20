@@ -96,6 +96,7 @@ void createjoblist(int *data, int *ops, int *regs) {
       while(op_current->next != NULL) {
         op_current = op_current->next;
       }
+      op_current->status = 0;
       op_current->next = malloc(sizeof(operation_t));
       op_current->next->id = i;
       op_current->next->type = ops[2*i];
@@ -470,52 +471,52 @@ void printlist(job_t * head) {
   // }
 
   if(current == NULL) {
-    printf("The list is empty\n");
+    printf("The list is empty\n\n");
     return;
   }
 
   while(current != NULL) {
-    printf("ID: %d\n",current->id);
+    printf("ID: %d\t",current->id);
     printf("PROCESS STATE: ");
 
     switch(current->process_state) {
       case WAITING:
-        printf("WAITING\n");
+        printf("WAITING\t");
         break;
       case READY:
-        printf("READY\n");
+        printf("READY\t");
         break;
       case BUSY:
-        printf("BUSY\n");
+        printf("BUSY\t");
         break;
       case ACTIVE:
-        printf("ACTIVE\n");
+        printf("ACTIVE\t");
         break;
       case COMPLETE:
-        printf("COMPLETE\n");
+        printf("COMPLETE\t");
         break;
     }
-    printf("PROGRAM COUNT: %d\n",current->prog_count);
-    printf("TOTAL MEMORY: %d\n",current->total_mem);
-    printf("MINIMUM MEMORY: %d\n",current->min_mem);
+    printf("PROGRAM COUNT: %d\t",current->prog_count);
+    // printf("TOTAL MEMORY: %d\t",current->total_mem);
+    // printf("MINIMUM MEMORY: %d\t",current->min_mem);
 
-    printf("REGISTERS: ");
-    if(current->registers != NULL) {
-      reg_current = current->registers;
-      while(reg_current != NULL){
-        printf("%d ",reg_current->id);
-        reg_current = reg_current->next;
-      }
-    } else {
-      printf("NONE");
-    }
-    printf("\n");
+    // printf("REGISTERS: ");
+    // if(current->registers != NULL) {
+    //   reg_current = current->registers;
+    //   while(reg_current != NULL){
+    //     printf("%d ",reg_current->id);
+    //     reg_current = reg_current->next;
+    //   }
+    // } else {
+    //   printf("NONE");
+    // }
+    // printf("\t");
 
     printf("OPERATIONS: ");
     if(current->operations != NULL) {
       op_current = current->operations;
       while(op_current != NULL){
-        printf("%d %d ",op_current->type, op_current->duration);
+        printf("%d %d %d ",op_current->status, op_current->type, op_current->duration);
         op_current = op_current->next;
       }
     } else {
@@ -547,30 +548,30 @@ job_t * temp;
 switch(list) {
   case JOBS:
     if(JOBS_LIST == NULL) {
-      printf("NO JOBS IN LIST\n");
+      // printf("NO JOBS IN LIST\n");
       return 0;
     }
-    printf("REMOVING JOBS HEAD\n");
+    // printf("REMOVING JOBS HEAD\n");
     temp = JOBS_LIST;
     JOBS_LIST = temp->next;
     free(temp);
     break;
   case READY:
     if(READY_Q == NULL) {
-      printf("NO JOBS IN READY Q\n");
+      // printf("NO JOBS IN READY Q\n");
       return 0;
     }
-    printf("REMOVING READY HEAD\n");
+    // printf("REMOVING READY HEAD\n");
     temp = READY_Q;
     READY_Q = temp->next;
     free(temp);
     break;
   case IO:
     if(IO_Q == NULL) {
-      printf("NO JOBS IN IO Q\n");
+      // printf("NO JOBS IN IO Q\n");
       return 0;
     }
-    printf("REMOVING IO HEAD\n");
+    // printf("REMOVING IO HEAD\n");
     temp = IO_Q;
     IO_Q = temp->next;
     free(temp);
