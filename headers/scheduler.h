@@ -14,7 +14,7 @@ int nextoperation(job_t *job) {
   }
 
   if(op_current == NULL) {
-    printf("JOB %d OPERATIONS FINISHED\n", job->id);
+    // printf("JOB %d OPERATIONS FINISHED\n", job->id);
     return OP_FIN;
   }
   return op_current->type;
@@ -23,22 +23,27 @@ int nextoperation(job_t *job) {
 /**
  * [longtermscheduler description]
  */
-void longtermscheduler(void) {
+int longtermscheduler(void) {
   // printf("longtermscheduler()\n");
   job_t * queue_tail;
   reg_t * queue_reg;
   operation_t * queue_op;
-  int found = 0;
+  int found_waiting = 0;
+  int found_active = 0;
+  int found_busy = 0;
 
 
   current = JOBS_LIST;
   while(current != NULL) {
     if(current->process_state == WAITING) {
-      found = 1;
+      found_waiting = 1;
 
       switch(nextoperation(current)) {
         case CPU_OP:
           current->process_state = READY;
+          if(current->response_checked == 0) {
+            gettimeofday(&current->on_line, NULL);
+          }
 
           if(READY_Q == NULL) {
             READY_Q = malloc(sizeof(job_t));
@@ -57,7 +62,17 @@ void longtermscheduler(void) {
         case IO_OP:
 
           current->process_state = BUSY;
-
+          if(current->checking_wait == 1) {
+            gettimeofday(&current->finish_wait, NULL);
+            current->checking_wait = 0;
+            current->total_wait_time += 1000 * (current->finish_wait.tv_sec - current->start_wait.tv_sec) + (current->finish_wait.tv_usec - current->start_wait.tv_usec) / 1000;
+            if(current->response_checked == 0) {
+              printf("2 %d-%ld / %ld\n",current->id,1000*current->finish_wait.tv_sec+current->finish_wait.tv_usec/1000,1000*current->start_job.tv_sec+current->start_job.tv_usec/1000);
+              current->response_time = 1000 * (current->finish_wait.tv_sec - current->on_line.tv_sec) + (current->finish_wait.tv_usec - current->on_line.tv_usec) / 1000;
+              // current->response_time = 1000 * (current->finish_wait.tv_sec - current->start_job.tv_sec) + (current->finish_wait.tv_usec - current->start_job.tv_usec) / 1000;
+              current->response_checked = 1;
+            }
+          }
           if(IO_Q == NULL) {
             IO_Q = malloc(sizeof(job_t));
             queue_tail = IO_Q;
@@ -73,7 +88,14 @@ void longtermscheduler(void) {
           break;
         case OP_FIN:
           current->process_state = COMPLETE;
-          printf("--------------------------------------------------------------------\n");
+          if(current->checking_cpu == 1) {
+            gettimeofday(&current->finish_cpu, NULL);
+            current->checking_cpu = 0;
+            current->total_cpu_time += 1000 * (current->finish_cpu.tv_sec - current->start_cpu.tv_sec) + (current->finish_cpu.tv_usec - current->start_cpu.tv_usec) / 1000;
+          }
+          gettimeofday(&current->finish_job, NULL);
+          current->total_run_time = 1000 * (current->finish_job.tv_sec - current->start_job.tv_sec) + (current->finish_job.tv_usec - current->start_job.tv_usec) / 1000;
+          printf("-----------------------------PRINT %4.0d-----------------------------\n",++print_count);
           printf("JOB LIST\n");
           printlist(JOBS_LIST);
 
@@ -142,12 +164,18 @@ void longtermscheduler(void) {
 
 
 
+    } else if(current->process_state == ACTIVE) {
+      found_active = 1;
+    } else if(current->process_state == BUSY) {
+      found_busy = 1;
     }
     current = current->next;
   }
-  if(found){
 
+  if( !found_waiting && !found_active && !found_busy ) {
+    return 1;
   }
+  return 0;
 }
 
 
@@ -185,6 +213,14 @@ void shorttermscheduler(void) { //Still needs a lot of work.
         current = current->next;
       }
       current->process_state = COMPLETE;
+      if(current->checking_cpu == 1) {
+        gettimeofday(&current->finish_cpu, NULL);
+        current->checking_cpu = 0;
+        current->total_cpu_time += 1000 * (current->finish_cpu.tv_sec - current->start_cpu.tv_sec) + (current->finish_cpu.tv_usec - current->start_cpu.tv_usec) / 1000;
+      }
+      gettimeofday(&current->finish_job, NULL);
+      current->total_run_time = 1000 * (current->finish_job.tv_sec - current->start_job.tv_sec) + (current->finish_job.tv_usec - current->start_job.tv_usec) / 1000;
+
       removehead(READY);
 
     }
@@ -198,7 +234,24 @@ void shorttermscheduler(void) { //Still needs a lot of work.
         current = current->next;
       }
       current->process_state = ACTIVE;
-      printf("--------------------------------------------------------------------\n");
+      if(current->job_started == 0){
+        gettimeofday(&current->start_job, NULL);
+        current->job_started = 1;
+      }
+      if(current->checking_wait == 1) {
+        gettimeofday(&current->finish_wait, NULL);
+        current->checking_wait = 0;
+        current->total_wait_time += 1000 * (current->finish_wait.tv_sec - current->start_wait.tv_sec) + (current->finish_wait.tv_usec - current->start_wait.tv_usec) / 1000;
+        if(current->response_checked == 0) {
+          printf("3 %d-%ld / %ld\n",current->id,1000*current->finish_wait.tv_sec+current->finish_wait.tv_usec/1000,1000*current->start_job.tv_sec+current->start_job.tv_usec/1000);
+          current->response_time = 1000 * (current->finish_wait.tv_sec - current->on_line.tv_sec) + (current->finish_wait.tv_usec - current->on_line.tv_usec) / 1000;
+          // current->response_time = 1000 * (current->finish_wait.tv_sec - current->start_job.tv_sec) + (current->finish_wait.tv_usec - current->start_job.tv_usec) / 1000;
+          current->response_checked = 1;
+        }
+      }
+      gettimeofday(&current->start_cpu, NULL);
+      current->checking_cpu = 1;
+      printf("-----------------------------PRINT %4.0d-----------------------------\n",++print_count);
       printf("JOB LIST\n");
       printlist(JOBS_LIST);
 

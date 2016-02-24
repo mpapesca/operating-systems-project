@@ -67,6 +67,11 @@ void createjoblist(int *data, int *ops, int *regs) {
   JOBS_LIST->prog_count = 0;
   JOBS_LIST->total_mem = data[1];
   JOBS_LIST->min_mem = data[2];
+  JOBS_LIST->num_regs = data[3];
+  JOBS_LIST->num_ops = data[4];
+
+  gettimeofday(&JOBS_LIST->start_wait, NULL);
+
 
   for(i = 0; i < data[3]; i++) {
     if(JOBS_LIST->registers == NULL) {
@@ -217,7 +222,6 @@ void appendjobtolist(job_t * head, int *data, int list, int *ops, int *regs) {
   while(current->next != NULL) {
     current = current->next;
   }
-
   current->next = malloc(sizeof(job_t));
   current->next->id = data[0];
   current->next->process_state = WAITING;
@@ -226,6 +230,9 @@ void appendjobtolist(job_t * head, int *data, int list, int *ops, int *regs) {
   current->next->min_mem = data[2];
   current->next->num_regs = data[3];
   current->next->num_ops = data[4];
+
+  gettimeofday(&current->start_wait, NULL);
+  current->checking_wait = 1;
 
   for(i = 0; i < data[3]; i++) {
     if(current->next->registers == NULL) {
@@ -464,53 +471,49 @@ void loadjobs(void) {
  * * * * * * * * * * * * * * * * * * * * * * * * */
 void printlist(job_t * head) {
 
-  // if(head == NULL) {
-    // current = JOBS_LIST;
-  // } else {
-    current = head;
-  // }
+  current = head;
 
   if(current == NULL) {
-    printf("The list is empty\n\n");
+    printf("THE LIST IS EMPTY\n\n");
     return;
   }
 
   while(current != NULL) {
-    printf("ID: %d\t",current->id);
+    printf("ID: %d\n",current->id);
     printf("PROCESS STATE: ");
 
     switch(current->process_state) {
       case WAITING:
-        printf("WAITING\t");
+        printf("WAITING\n");
         break;
       case READY:
-        printf("READY\t");
+        printf("READY\n");
         break;
       case BUSY:
-        printf("BUSY\t");
+        printf("BUSY\n");
         break;
       case ACTIVE:
-        printf("ACTIVE\t");
+        printf("ACTIVE\n");
         break;
       case COMPLETE:
-        printf("COMPLETE\t");
+        printf("COMPLETE\n");
         break;
     }
-    printf("PROGRAM COUNT: %d\t",current->prog_count);
-    // printf("TOTAL MEMORY: %d\t",current->total_mem);
-    // printf("MINIMUM MEMORY: %d\t",current->min_mem);
+    printf("PROGRAM COUNT: %d\n",current->prog_count);
+    printf("TOTAL MEMORY: %d\n",current->total_mem);
+    printf("MINIMUM MEMORY: %d\n",current->min_mem);
 
-    // printf("REGISTERS: ");
-    // if(current->registers != NULL) {
-    //   reg_current = current->registers;
-    //   while(reg_current != NULL){
-    //     printf("%d ",reg_current->id);
-    //     reg_current = reg_current->next;
-    //   }
-    // } else {
-    //   printf("NONE");
-    // }
-    // printf("\t");
+    printf("REGISTERS: ");
+    if(current->registers != NULL) {
+      reg_current = current->registers;
+      while(reg_current != NULL){
+        printf("%d ",reg_current->id);
+        reg_current = reg_current->next;
+      }
+    } else {
+      printf("NONE");
+    }
+    printf("\n");
 
     printf("OPERATIONS: ");
     if(current->operations != NULL) {

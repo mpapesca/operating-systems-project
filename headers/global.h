@@ -12,6 +12,7 @@ reg_t * reg_current;
 /* G E N E R I C   I N T   T Y P E   V A R I A B L E S */
 uint32_t i;
 uint32_t j;
+uint32_t print_count = 0;
 
 /* G E N E R I C   C H A R   T Y P E   V A R I A B L E S */
 int8_t c;
@@ -24,6 +25,11 @@ time_t current_time;
 int previous_time;
 time_t cpu_op_finish_time;
 time_t io_op_finish_time;
+// clock_t prog_start_time;
+struct timeval prog_start_time;
+// clock_t prog_end_time;
+struct timeval prog_end_time;
+uint64_t prog_total_time;
 
 /* P R O G R A M   C O U N T E R S */
 

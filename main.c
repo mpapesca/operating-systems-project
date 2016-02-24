@@ -5,6 +5,7 @@
 #include <stdint.h>
 #include <stdio.h>
 #include <time.h>
+#include <sys/time.h>
 #include "headers/defs.h"
 #include "headers/global.h"
 #include "headers/node_operations.h"
@@ -15,6 +16,8 @@
 /* M A I N */
 
 int main(void) {
+
+  start();
 
   loadjobfile();
   loadjobs();
@@ -32,7 +35,9 @@ int main(void) {
 
   while(1) {
     // printf("main1\n");
-    longtermscheduler();
+    if(longtermscheduler()){
+      break;
+    }
 
     // printf("main2\n");
     shorttermscheduler();
@@ -43,6 +48,10 @@ int main(void) {
     // printf("main4\n");
     opio();
   }
+
+  stop();
+
+  printdetails();
 
   return 0;
 }

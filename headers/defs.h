@@ -95,6 +95,31 @@ typedef struct job {
   int32_t num_regs;
   reg_t *registers;
   int32_t num_ops;
+
+  //These are for timing measurements
+  struct timeval start_job;
+  struct timeval finish_job;
+
+  struct timeval start_wait;
+  struct timeval finish_wait;
+  struct timeval start_cpu;
+  struct timeval finish_cpu;
+  struct timeval on_line;
+
+  uint32_t  total_run_time;
+  uint32_t  total_wait_time;
+  uint32_t  total_cpu_time;
+  uint32_t  response_time;
+  float     average_wait_time;
+
+  uint8_t checking_cpu;
+  uint8_t checking_wait;
+  uint8_t job_started;
+  uint8_t response_checked;
+
+
+
+
   operation_t * operations;
   uint8_t ** open_files;
 
