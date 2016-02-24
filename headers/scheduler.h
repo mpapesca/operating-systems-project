@@ -1,6 +1,6 @@
 
 int nextoperation(job_t *job) {
-  // printf("nextoperation()\n");
+  // fprintf(log_file,"nextoperation()\n");
 
   int elapsed = 0;
 
@@ -14,7 +14,7 @@ int nextoperation(job_t *job) {
   }
 
   if(op_current == NULL) {
-    // printf("JOB %d OPERATIONS FINISHED\n", job->id);
+    // fprintf(log_file,"JOB %d OPERATIONS FINISHED\n", job->id);
     return OP_FIN;
   }
   return op_current->type;
@@ -24,7 +24,7 @@ int nextoperation(job_t *job) {
  * [longtermscheduler description]
  */
 int longtermscheduler(void) {
-  // printf("longtermscheduler()\n");
+  // fprintf(log_file,"longtermscheduler()\n");
   job_t * queue_tail;
   reg_t * queue_reg;
   operation_t * queue_op;
@@ -67,7 +67,7 @@ int longtermscheduler(void) {
             current->checking_wait = 0;
             current->total_wait_time += 1000 * (current->finish_wait.tv_sec - current->start_wait.tv_sec) + (current->finish_wait.tv_usec - current->start_wait.tv_usec) / 1000;
             if(current->response_checked == 0) {
-              printf("2 %d-%ld / %ld\n",current->id,1000*current->finish_wait.tv_sec+current->finish_wait.tv_usec/1000,1000*current->start_job.tv_sec+current->start_job.tv_usec/1000);
+              fprintf(log_file,"2 %d-%ld / %ld\n",current->id,1000*current->finish_wait.tv_sec+current->finish_wait.tv_usec/1000,1000*current->start_job.tv_sec+current->start_job.tv_usec/1000);
               current->response_time = 1000 * (current->finish_wait.tv_sec - current->on_line.tv_sec) + (current->finish_wait.tv_usec - current->on_line.tv_usec) / 1000;
               // current->response_time = 1000 * (current->finish_wait.tv_sec - current->start_job.tv_sec) + (current->finish_wait.tv_usec - current->start_job.tv_usec) / 1000;
               current->response_checked = 1;
@@ -95,16 +95,16 @@ int longtermscheduler(void) {
           }
           gettimeofday(&current->finish_job, NULL);
           current->total_run_time = 1000 * (current->finish_job.tv_sec - current->start_job.tv_sec) + (current->finish_job.tv_usec - current->start_job.tv_usec) / 1000;
-          printf("-----------------------------PRINT %4.0d-----------------------------\n",++print_count);
-          printf("JOB LIST\n");
+          fprintf(log_file,"-----------------------------PRINT %4.0d-----------------------------\n",++print_count);
+          fprintf(log_file,"JOB LIST\n");
           printlist(JOBS_LIST);
 
-          printf("READY QUEUE\n");
+          fprintf(log_file,"READY QUEUE\n");
           printlist(READY_Q);
 
-          printf("IO QUEUE\n");
+          fprintf(log_file,"IO QUEUE\n");
           printlist(IO_Q);
-          printf("--------------------------------------------------------------------\n");
+          fprintf(log_file,"--------------------------------------------------------------------\n");
           continue;
           // break;
         default:
@@ -184,7 +184,7 @@ int longtermscheduler(void) {
  */
 void shorttermscheduler(void) { //Still needs a lot of work.
 
-  // printf("shorttermscheduler()\n");
+  // fprintf(log_file,"shorttermscheduler()\n");
 
   if(READY_Q == NULL) {
     return;
@@ -226,7 +226,7 @@ void shorttermscheduler(void) { //Still needs a lot of work.
     }
 
     if(op_current->status == 0) {
-      printf("NEW CPU OPERTATION\n");
+      fprintf(log_file,"NEW CPU OPERATION\n");
       READY_Q->process_state = ACTIVE;
       CURRENT_CPU_COUNT = 0;
       current = JOBS_LIST;
@@ -243,7 +243,7 @@ void shorttermscheduler(void) { //Still needs a lot of work.
         current->checking_wait = 0;
         current->total_wait_time += 1000 * (current->finish_wait.tv_sec - current->start_wait.tv_sec) + (current->finish_wait.tv_usec - current->start_wait.tv_usec) / 1000;
         if(current->response_checked == 0) {
-          printf("3 %d-%ld / %ld\n",current->id,1000*current->finish_wait.tv_sec+current->finish_wait.tv_usec/1000,1000*current->start_job.tv_sec+current->start_job.tv_usec/1000);
+          fprintf(log_file,"3 %d-%ld / %ld\n",current->id,1000*current->finish_wait.tv_sec+current->finish_wait.tv_usec/1000,1000*current->start_job.tv_sec+current->start_job.tv_usec/1000);
           current->response_time = 1000 * (current->finish_wait.tv_sec - current->on_line.tv_sec) + (current->finish_wait.tv_usec - current->on_line.tv_usec) / 1000;
           // current->response_time = 1000 * (current->finish_wait.tv_sec - current->start_job.tv_sec) + (current->finish_wait.tv_usec - current->start_job.tv_usec) / 1000;
           current->response_checked = 1;
@@ -251,16 +251,16 @@ void shorttermscheduler(void) { //Still needs a lot of work.
       }
       gettimeofday(&current->start_cpu, NULL);
       current->checking_cpu = 1;
-      printf("-----------------------------PRINT %4.0d-----------------------------\n",++print_count);
-      printf("JOB LIST\n");
+      fprintf(log_file,"-----------------------------PRINT %4.0d-----------------------------\n",++print_count);
+      fprintf(log_file,"JOB LIST\n");
       printlist(JOBS_LIST);
 
-      printf("READY QUEUE\n");
+      fprintf(log_file,"READY QUEUE\n");
       printlist(READY_Q);
 
-      printf("IO QUEUE\n");
+      fprintf(log_file,"IO QUEUE\n");
       printlist(IO_Q);
-      printf("--------------------------------------------------------------------\n");
+      fprintf(log_file,"--------------------------------------------------------------------\n");
     }
 
   }

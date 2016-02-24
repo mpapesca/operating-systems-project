@@ -19,15 +19,14 @@ int8_t c;
 
 /* F I L E S */
 FILE * job_file;
+FILE * log_file;
 
 /* T I M E */
 time_t current_time;
 int previous_time;
 time_t cpu_op_finish_time;
 time_t io_op_finish_time;
-// clock_t prog_start_time;
 struct timeval prog_start_time;
-// clock_t prog_end_time;
 struct timeval prog_end_time;
 uint64_t prog_total_time;
 

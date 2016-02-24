@@ -15,7 +15,7 @@
 
 void loadjobfile(void) {
   system(MOVE_FILE);
-  printf("START PROGRAM:\n\n");
+  fprintf(log_file,"START PROGRAM:\n\n");
 }
 
 /* * * * * * * * * * * * * * * * * * * * * * * * *
@@ -299,7 +299,7 @@ void loadjobs(void) {
       }
 
       if(remove(FILE_PATH) == -1) {
-        printf("ERROR DELETING FILE: %s\n", FILE_PATH);
+        fprintf(log_file,"ERROR DELETING FILE: %s\n", FILE_PATH);
       }
     } else {
       break;
@@ -474,62 +474,62 @@ void printlist(job_t * head) {
   current = head;
 
   if(current == NULL) {
-    printf("THE LIST IS EMPTY\n\n");
+    fprintf(log_file,"THE LIST IS EMPTY\n\n");
     return;
   }
 
   while(current != NULL) {
-    printf("ID: %d\n",current->id);
-    printf("PROCESS STATE: ");
+    fprintf(log_file,"ID: %d\n",current->id);
+    fprintf(log_file,"PROCESS STATE: ");
 
     switch(current->process_state) {
       case WAITING:
-        printf("WAITING\n");
+        fprintf(log_file,"WAITING\n");
         break;
       case READY:
-        printf("READY\n");
+        fprintf(log_file,"READY\n");
         break;
       case BUSY:
-        printf("BUSY\n");
+        fprintf(log_file,"BUSY\n");
         break;
       case ACTIVE:
-        printf("ACTIVE\n");
+        fprintf(log_file,"ACTIVE\n");
         break;
       case COMPLETE:
-        printf("COMPLETE\n");
+        fprintf(log_file,"COMPLETE\n");
         break;
     }
-    printf("PROGRAM COUNT: %d\n",current->prog_count);
-    printf("TOTAL MEMORY: %d\n",current->total_mem);
-    printf("MINIMUM MEMORY: %d\n",current->min_mem);
+    fprintf(log_file,"PROGRAM COUNT: %d\n",current->prog_count);
+    fprintf(log_file,"TOTAL MEMORY: %d\n",current->total_mem);
+    fprintf(log_file,"MINIMUM MEMORY: %d\n",current->min_mem);
 
-    printf("REGISTERS: ");
+    fprintf(log_file,"REGISTERS: ");
     if(current->registers != NULL) {
       reg_current = current->registers;
       while(reg_current != NULL){
-        printf("%d ",reg_current->id);
+        fprintf(log_file,"%d ",reg_current->id);
         reg_current = reg_current->next;
       }
     } else {
-      printf("NONE");
+      fprintf(log_file,"NONE");
     }
-    printf("\n");
+    fprintf(log_file,"\n");
 
-    printf("OPERATIONS: ");
+    fprintf(log_file,"OPERATIONS: ");
     if(current->operations != NULL) {
       op_current = current->operations;
       while(op_current != NULL){
-        printf("%d %d %d ",op_current->status, op_current->type, op_current->duration);
+        fprintf(log_file,"%d %d %d ",op_current->status, op_current->type, op_current->duration);
         op_current = op_current->next;
       }
     } else {
-      printf("NONE");
+      fprintf(log_file,"NONE");
     }
-    printf("\n\n");
+    fprintf(log_file,"\n\n");
 
     current = current->next;
   }
-  printf("\n");
+  fprintf(log_file,"\n");
 }
 
 /* * * * * * * * * * * * * * * * * * * * * * * * *
@@ -551,30 +551,30 @@ job_t * temp;
 switch(list) {
   case JOBS:
     if(JOBS_LIST == NULL) {
-      // printf("NO JOBS IN LIST\n");
+      // fprintf(log_file,"NO JOBS IN LIST\n");
       return 0;
     }
-    // printf("REMOVING JOBS HEAD\n");
+    // fprintf(log_file,"REMOVING JOBS HEAD\n");
     temp = JOBS_LIST;
     JOBS_LIST = temp->next;
     free(temp);
     break;
   case READY:
     if(READY_Q == NULL) {
-      // printf("NO JOBS IN READY Q\n");
+      // fprintf(log_file,"NO JOBS IN READY Q\n");
       return 0;
     }
-    // printf("REMOVING READY HEAD\n");
+    // fprintf(log_file,"REMOVING READY HEAD\n");
     temp = READY_Q;
     READY_Q = temp->next;
     free(temp);
     break;
   case IO:
     if(IO_Q == NULL) {
-      // printf("NO JOBS IN IO Q\n");
+      // fprintf(log_file,"NO JOBS IN IO Q\n");
       return 0;
     }
-    // printf("REMOVING IO HEAD\n");
+    // fprintf(log_file,"REMOVING IO HEAD\n");
     temp = IO_Q;
     IO_Q = temp->next;
     free(temp);

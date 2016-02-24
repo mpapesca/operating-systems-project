@@ -22,30 +22,27 @@ int main(void) {
   loadjobfile();
   loadjobs();
 
-  printf("--------------------------------------------------------------------\n");
-  printf("JOB LIST\n");
+  fprintf(log_file,"--------------------------------------------------------------------\n");
+  fprintf(log_file,"JOB LIST\n");
   printlist(JOBS_LIST);
 
-  printf("READY QUEUE\n");
+  fprintf(log_file,"READY QUEUE\n");
   printlist(READY_Q);
 
-  printf("IO QUEUE\n");
+  fprintf(log_file,"IO QUEUE\n");
   printlist(IO_Q);
-  printf("--------------------------------------------------------------------\n");
+  fprintf(log_file,"--------------------------------------------------------------------\n");
 
   while(1) {
-    // printf("main1\n");
+
     if(longtermscheduler()){
       break;
     }
 
-    // printf("main2\n");
     shorttermscheduler();
 
-    // printf("main3\n");
     opcpu();
 
-    // printf("main4\n");
     opio();
   }
 

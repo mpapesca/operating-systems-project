@@ -1,14 +1,14 @@
 void opcpu(void) {
-  // printf("opcpu()\n");
+  // fprintf(log_file,"opcpu()\n");
 
   if(READY_Q == NULL) {
     return;
   } else if(READY_Q->process_state == ACTIVE) {
     CURRENT_CPU_COUNT++;
     op_current = READY_Q->operations;
-    // printf("check\n");
+    // fprintf(log_file,"check\n");
     while(op_current != NULL) {
-      // printf("check\n");
+      // fprintf(log_file,"check\n");
       if(op_current->status == 0) {
         break;
       }
@@ -20,22 +20,22 @@ void opcpu(void) {
       current = JOBS_LIST;
       while(current->id != READY_Q->id) {
         if(current == NULL) {
-          printf("NO ID FOUND FOR IO\n");
+          fprintf(log_file,"NO ID FOUND FOR IO\n");
         }
         current = current->next;
       }
-      // printf("check\n");
+      // fprintf(log_file,"check\n");
       current->prog_count += CURRENT_CPU_COUNT;
       op_current = current->operations;
       while(op_current != NULL) {
-        // printf("check\n");
+        // fprintf(log_file,"check\n");
         if(op_current->status == 0) {
           break;
         }
         op_current = op_current->next;
       }
-      // printf("check\n");
-      // printf("check\n");
+      // fprintf(log_file,"check\n");
+      // fprintf(log_file,"check\n");
       op_current->status = 1;
       current->process_state = WAITING;
       if(current->checking_cpu == 1) {
@@ -47,30 +47,30 @@ void opcpu(void) {
       current->checking_wait = 1;
 
       removehead(READY);
-      // printf("--------------------------------------------------------------------\n");
-      // printf("JOB LIST\n");
+      // fprintf(log_file,"--------------------------------------------------------------------\n");
+      // fprintf(log_file,"JOB LIST\n");
       // printlist(JOBS_LIST);
       //
-      // printf("READY QUEUE\n");
+      // fprintf(log_file,"READY QUEUE\n");
       // printlist(READY_Q);
       //
-      // printf("IO QUEUE\n");
+      // fprintf(log_file,"IO QUEUE\n");
       // printlist(IO_Q);
-      // printf("--------------------------------------------------------------------\n");
+      // fprintf(log_file,"--------------------------------------------------------------------\n");
     }
     // if(op_current == NULL) {
-      // printf("null operation\n");
+      // fprintf(log_file,"null operation\n");
     // }
   }
 }
 
 void opio(void) {
-  // printf("opio()\n");
+  // fprintf(log_file,"opio()\n");
 
   if(IO_Q == NULL){
     return;
   } else if(IO_Q->process_state == ACTIVE) {
-    // printf("here\n");
+    // fprintf(log_file,"here\n");
     CURRENT_IO_COUNT++;
     op_current = IO_Q->operations;
     while(op_current != NULL) {
@@ -86,7 +86,7 @@ void opio(void) {
       current = JOBS_LIST;
       while(current->id != IO_Q->id) {
         if(current == NULL) {
-          printf("NO ID FOUND FOR IO\n");
+          fprintf(log_file,"NO ID FOUND FOR IO\n");
         }
         current = current->next;
 
@@ -94,13 +94,13 @@ void opio(void) {
       current->prog_count += CURRENT_IO_COUNT;
       op_current = current->operations;
       while(op_current != NULL) {
-        // printf("check\n");
+        // fprintf(log_file,"check\n");
         if(op_current->status == 0) {
           break;
         }
         op_current = op_current->next;
       }
-      // printf("check\n");
+      // fprintf(log_file,"check\n");
       op_current->status = 1;
       current->process_state = WAITING;
       if(current->checking_cpu == 1) {
@@ -111,16 +111,16 @@ void opio(void) {
       gettimeofday(&current->start_wait, NULL);
       current->checking_wait = 1;
       removehead(IO);
-      // printf("--------------------------------------------------------------------\n");
-      // printf("JOB LIST\n");
+      // fprintf(log_file,"--------------------------------------------------------------------\n");
+      // fprintf(log_file,"JOB LIST\n");
       // printlist(JOBS_LIST);
       //
-      // printf("READY QUEUE\n");
+      // fprintf(log_file,"READY QUEUE\n");
       // printlist(READY_Q);
       //
-      // printf("IO QUEUE\n");
+      // fprintf(log_file,"IO QUEUE\n");
       // printlist(IO_Q);
-      // printf("--------------------------------------------------------------------\n");
+      // fprintf(log_file,"--------------------------------------------------------------------\n");
     }
   } else if (IO_Q->process_state == READY) {
     op_current = IO_Q->operations;
@@ -149,7 +149,7 @@ void opio(void) {
     }
 
     if(op_current->status == 0) {
-      printf("NEW IO OPERTATION\n");
+      fprintf(log_file,"NEW IO OPERATION\n");
       // cpu_op_finish_time = current_time + op_current->duration;
       // previous_time = op_current->duration;
       IO_Q->process_state = ACTIVE;
@@ -168,7 +168,7 @@ void opio(void) {
         current->checking_wait = 0;
         current->total_wait_time += 1000 * (current->finish_wait.tv_sec - current->start_wait.tv_sec) + (current->finish_wait.tv_usec - current->start_wait.tv_usec) / 1000;
         if(current->response_checked == 0) {
-          printf("1 %d-%ld / %ld\n",current->id,1000*current->finish_wait.tv_sec+current->finish_wait.tv_usec/1000,1000*current->start_job.tv_sec+current->start_job.tv_usec/1000);
+          fprintf(log_file,"1 %d-%ld / %ld\n",current->id,1000*current->finish_wait.tv_sec+current->finish_wait.tv_usec/1000,1000*current->start_job.tv_sec+current->start_job.tv_usec/1000);
           current->response_time = 1000 * (current->finish_wait.tv_sec - current->on_line.tv_sec) + (current->finish_wait.tv_usec - current->on_line.tv_usec) / 1000;
           current->response_checked = 1;
         }
@@ -177,16 +177,16 @@ void opio(void) {
       current->checking_cpu = 1;
 
     }
-    printf("-----------------------------PRINT %4.0d-----------------------------\n",++print_count);
-    printf("JOB LIST\n");
+    fprintf(log_file,"-----------------------------PRINT %4.0d-----------------------------\n",++print_count);
+    fprintf(log_file,"JOB LIST\n");
     printlist(JOBS_LIST);
 
-    printf("READY QUEUE\n");
+    fprintf(log_file,"READY QUEUE\n");
     printlist(READY_Q);
 
-    printf("IO QUEUE\n");
+    fprintf(log_file,"IO QUEUE\n");
     printlist(IO_Q);
-    printf("--------------------------------------------------------------------\n");
+    fprintf(log_file,"--------------------------------------------------------------------\n");
   }
 
 
@@ -208,28 +208,28 @@ void printdetails(void) {
     }
 
     if(job_count == 0) {
-      printf("NO JOBS RECIEVED\n");
+      fprintf(log_file,"NO JOBS RECIEVED\n");
     }
 
 
-    printf("\n\n*********************** ALL JOBS COMPlETE ***********************\n");
-    printf("\nTOTAL RUN TIME: %lldms\n",prog_total_time);
-    printf("TOTAL CPU TIME: %ums\n", temp_total_cpu_time);
-    printf("AVERAGE TOTAL WAIT TIME: %0.2fm\n", (float)temp_total_wait_time/job_count);
+    fprintf(log_file,"\n\n*********************** ALL JOBS COMPlETE ***********************\n");
+    fprintf(log_file,"\nTOTAL RUN TIME: %lldms\n",prog_total_time);
+    fprintf(log_file,"TOTAL CPU TIME: %ums\n", temp_total_cpu_time);
+    fprintf(log_file,"AVERAGE TOTAL WAIT TIME: %0.2fm\n", (float)temp_total_wait_time/job_count);
 
     current = JOBS_LIST;
     while(current != NULL) {
 
       current->average_wait_time = (float)current->total_wait_time/current->num_ops;
 
-      printf("\n");
-      printf("JOB: %d\n",current->id);
-      printf("RESPONSE TIME: %ums\n", current->response_time);
-      printf("TOTAL RUN TIME: %ums\n", current->total_run_time);
-      printf("TOTAL CPU TIME: %ums\n", current->total_cpu_time);
-      printf("TOTAL WAIT TIME: %ums\n", current->total_wait_time);
-      printf("AVERAGE WAIT TIME: %0.2fms\n", current->average_wait_time);
-      printf("\n");
+      fprintf(log_file,"\n");
+      fprintf(log_file,"JOB: %d\n",current->id);
+      fprintf(log_file,"RESPONSE TIME: %ums\n", current->response_time);
+      fprintf(log_file,"TOTAL RUN TIME: %ums\n", current->total_run_time);
+      fprintf(log_file,"TOTAL CPU TIME: %ums\n", current->total_cpu_time);
+      fprintf(log_file,"TOTAL WAIT TIME: %ums\n", current->total_wait_time);
+      fprintf(log_file,"AVERAGE WAIT TIME: %0.2fms\n", current->average_wait_time);
+      fprintf(log_file,"\n");
       current = current->next;
     }
 
@@ -237,7 +237,14 @@ void printdetails(void) {
 
 static inline void start()
 {
-    gettimeofday(&prog_start_time, NULL);
+    // time_t log_time;
+    // struct tm * log_info;
+    // time(&log_time);
+    // log_info = localtime(&log_time);
+
+// fprintf(log_file,"Current local time and date: %s", "hello");
+  gettimeofday(&prog_start_time, NULL);
+  log_file = fopen("docs/log_file.txt","w+");
 }
 
 static inline void stop()
