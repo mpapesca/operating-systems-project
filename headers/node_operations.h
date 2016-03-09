@@ -474,36 +474,35 @@ void printlist(job_t * head) {
   current = head;
 
   if(current == NULL) {
-    fprintf(log_file,"THE LIST IS EMPTY\n\n");
+    fprintf(log_file,"- THE LIST IS EMPTY\n- \n");
     return;
   }
-
   while(current != NULL) {
-    fprintf(log_file,"ID: %d\n",current->id);
-    fprintf(log_file,"PROCESS STATE: ");
+    fprintf(log_file,"- ID: %d\n",current->id);
+    fprintf(log_file,"- PROCESS_STATE\t PROGRAM_COUNT\tTOTAL_MEMORY\tMINIMUM_MEMORY\n");
 
     switch(current->process_state) {
       case WAITING:
-        fprintf(log_file,"WAITING\n");
+        fprintf(log_file,"- WAITING\t ");
         break;
       case READY:
-        fprintf(log_file,"READY\n");
+        fprintf(log_file,"- READY\t\t ");
         break;
       case BUSY:
-        fprintf(log_file,"BUSY\n");
+        fprintf(log_file,"- BUSY\t\t ");
         break;
       case ACTIVE:
-        fprintf(log_file,"ACTIVE\n");
+        fprintf(log_file,"- ACTIVE\t ");
         break;
       case COMPLETE:
-        fprintf(log_file,"COMPLETE\n");
+        fprintf(log_file,"- COMPLETE\t");
         break;
     }
-    fprintf(log_file,"PROGRAM COUNT: %d\n",current->prog_count);
-    fprintf(log_file,"TOTAL MEMORY: %d\n",current->total_mem);
-    fprintf(log_file,"MINIMUM MEMORY: %d\n",current->min_mem);
+    fprintf(log_file,"%d\t\t",current->prog_count);
+    fprintf(log_file,"%d\t\t",current->total_mem);
+    fprintf(log_file,"%d\n",current->min_mem);
 
-    fprintf(log_file,"REGISTERS: ");
+    fprintf(log_file,"- REGISTERS:");
     if(current->registers != NULL) {
       reg_current = current->registers;
       while(reg_current != NULL){
@@ -515,7 +514,7 @@ void printlist(job_t * head) {
     }
     fprintf(log_file,"\n");
 
-    fprintf(log_file,"OPERATIONS: ");
+    fprintf(log_file,"- OPERATIONS:");
     if(current->operations != NULL) {
       op_current = current->operations;
       while(op_current != NULL){
@@ -525,11 +524,11 @@ void printlist(job_t * head) {
     } else {
       fprintf(log_file,"NONE");
     }
-    fprintf(log_file,"\n\n");
+    fprintf(log_file,"\n-\n");
 
     current = current->next;
   }
-  fprintf(log_file,"\n");
+  fprintf(log_file,"-\n");
 }
 
 /* * * * * * * * * * * * * * * * * * * * * * * * *

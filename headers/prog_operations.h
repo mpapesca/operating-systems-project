@@ -149,7 +149,7 @@ void opio(void) {
     }
 
     if(op_current->status == 0) {
-      fprintf(log_file,"NEW IO OPERATION\n");
+      // fprintf(log_file,"NEW IO OPERATION\n");
       // cpu_op_finish_time = current_time + op_current->duration;
       // previous_time = op_current->duration;
       IO_Q->process_state = ACTIVE;
@@ -168,7 +168,7 @@ void opio(void) {
         current->checking_wait = 0;
         current->total_wait_time += 1000 * (current->finish_wait.tv_sec - current->start_wait.tv_sec) + (current->finish_wait.tv_usec - current->start_wait.tv_usec) / 1000;
         if(current->response_checked == 0) {
-          fprintf(log_file,"1 %d-%ld / %ld\n",current->id,1000*current->finish_wait.tv_sec+current->finish_wait.tv_usec/1000,1000*current->start_job.tv_sec+current->start_job.tv_usec/1000);
+          // fprintf(log_file,"1 %d-%ld / %ld\n",current->id,1000*current->finish_wait.tv_sec+current->finish_wait.tv_usec/1000,1000*current->start_job.tv_sec+current->start_job.tv_usec/1000);
           current->response_time = 1000 * (current->finish_wait.tv_sec - current->on_line.tv_sec) + (current->finish_wait.tv_usec - current->on_line.tv_usec) / 1000;
           current->response_checked = 1;
         }
@@ -177,16 +177,16 @@ void opio(void) {
       current->checking_cpu = 1;
 
     }
-    fprintf(log_file,"-----------------------------PRINT %4.0d-----------------------------\n",++print_count);
-    fprintf(log_file,"JOB LIST\n");
+    fprintf(log_file,"-----------------------------PRINT %0.4d-----------------------------\n",print_count++);
+    fprintf(log_file,"- JOB LIST\n");
     printlist(JOBS_LIST);
 
-    fprintf(log_file,"READY QUEUE\n");
+    fprintf(log_file,"- READY QUEUE\n");
     printlist(READY_Q);
 
-    fprintf(log_file,"IO QUEUE\n");
+    fprintf(log_file,"- IO QUEUE\n");
     printlist(IO_Q);
-    fprintf(log_file,"--------------------------------------------------------------------\n");
+    fprintf(log_file,"--------------------------------------------------------------------\n\n\n\n");
   }
 
 
@@ -194,9 +194,10 @@ void opio(void) {
 
 void printdetails(void) {
 
-    uint32_t temp_total_wait_time, temp_total_cpu_time, job_count;
+    uint32_t temp_total_wait_time, temp_total_cpu_time, job_count, temp_total_response_time;
     temp_total_cpu_time = 0;
     temp_total_wait_time = 0;
+    temp_total_response_time = 0;
     job_count = 0;
 
     current = JOBS_LIST;
@@ -204,6 +205,7 @@ void printdetails(void) {
       job_count++;
       temp_total_wait_time += current->total_wait_time;
       temp_total_cpu_time += current->total_cpu_time;
+      temp_total_response_time += current->response_time;
       current = current->next;
     }
 
@@ -212,26 +214,35 @@ void printdetails(void) {
     }
 
 
-    fprintf(log_file,"\n\n*********************** ALL JOBS COMPlETE ***********************\n");
-    fprintf(log_file,"\nTOTAL RUN TIME: %lldms\n",prog_total_time);
-    fprintf(log_file,"TOTAL CPU TIME: %ums\n", temp_total_cpu_time);
-    fprintf(log_file,"AVERAGE TOTAL WAIT TIME: %0.2fm\n", (float)temp_total_wait_time/job_count);
+    fprintf(log_file,"\n\n************************* ALL JOBS COMPlETE ************************\n");
+    fprintf(log_file,"* \n* NUMBER OF JOBS: %u\n",job_count);
+    fprintf(log_file,"* TOTAL RUN TIME: %lldms\n",prog_total_time);
+    fprintf(log_file,"* TOTAL CPU TIME: %ums\n", temp_total_cpu_time);
+    fprintf(log_file,"* AVERAGE TOTAL WAIT TIME: %0.2fm\n", (float)temp_total_wait_time/job_count);
+    fprintf(log_file,"* AVERAGE RESPONSE TIME: %0.2fm\n", (float)temp_total_response_time/job_count);
 
+    fprintf(log_file,"* \n");
+    fprintf(log_file, "* *-----------------------------------------------------*\n");
+    fprintf(log_file,"* |JOB\t|RESP\t|RUN\t|CPU\t|WAIT\t|AVE_OP_WAIT\t|\n");
+    // fprintf(log_file, "|-------|-------|-------|-------|-------|---------------|\n");
     current = JOBS_LIST;
     while(current != NULL) {
 
       current->average_wait_time = (float)current->total_wait_time/current->num_ops;
 
-      fprintf(log_file,"\n");
-      fprintf(log_file,"JOB: %d\n",current->id);
-      fprintf(log_file,"RESPONSE TIME: %ums\n", current->response_time);
-      fprintf(log_file,"TOTAL RUN TIME: %ums\n", current->total_run_time);
-      fprintf(log_file,"TOTAL CPU TIME: %ums\n", current->total_cpu_time);
-      fprintf(log_file,"TOTAL WAIT TIME: %ums\n", current->total_wait_time);
-      fprintf(log_file,"AVERAGE WAIT TIME: %0.2fms\n", current->average_wait_time);
-      fprintf(log_file,"\n");
+      fprintf(log_file, "* |-----+-------+-------+-------+-------+---------------|\n");
+      fprintf(log_file,"* |%d\t|%ums\t|%ums\t|%ums\t|%ums\t|%0.2fms\t|\n",current->id, current->response_time, current->total_run_time, current->total_cpu_time, current->total_wait_time, current->average_wait_time);
+      // fprintf(log_file,"JOB: %d\n",current->id);
+      // fprintf(log_file,"RESPONSE TIME: %ums\n", current->response_time);
+      // fprintf(log_file,"TOTAL RUN TIME: %ums\n", current->total_run_time);
+      // fprintf(log_file,"TOTAL CPU TIME: %ums\n", current->total_cpu_time);
+      // fprintf(log_file,"TOTAL WAIT TIME: %ums\n", current->total_wait_time);
+      // fprintf(log_file,"AVERAGE WAIT TIME: %0.2fms\n", current->average_wait_time);
+      // fprintf(log_file,"\n");
       current = current->next;
     }
+    fprintf(log_file, "* *-----------------------------------------------------*\n");
+    fprintf(log_file,"********************************************************************\n");
 
 }
 
@@ -245,6 +256,7 @@ static inline void start()
 // fprintf(log_file,"Current local time and date: %s", "hello");
   gettimeofday(&prog_start_time, NULL);
   log_file = fopen("docs/log_file.txt","w+");
+  fprintf(log_file, "Michael Papesca\nCPS522\n\n");
 }
 
 static inline void stop()

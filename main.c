@@ -22,16 +22,16 @@ int main(void) {
   loadjobfile();
   loadjobs();
 
-  fprintf(log_file,"--------------------------------------------------------------------\n");
-  fprintf(log_file,"JOB LIST\n");
+  fprintf(log_file,"-----------------------------PRINT %0.4d-----------------------------\n",print_count++);
+  fprintf(log_file,"- JOB LIST\n");
   printlist(JOBS_LIST);
 
-  fprintf(log_file,"READY QUEUE\n");
+  fprintf(log_file,"- READY QUEUE\n");
   printlist(READY_Q);
 
-  fprintf(log_file,"IO QUEUE\n");
+  fprintf(log_file,"- IO QUEUE\n");
   printlist(IO_Q);
-  fprintf(log_file,"--------------------------------------------------------------------\n");
+  fprintf(log_file,"--------------------------------------------------------------------\n\n\n\n");
 
   while(1) {
 
@@ -39,7 +39,7 @@ int main(void) {
       break;
     }
 
-    shorttermscheduler();
+    shorttermscheduler();// Add a global flag variable to trigger LTS.
 
     opcpu();
 

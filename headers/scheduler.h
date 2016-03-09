@@ -67,7 +67,7 @@ int longtermscheduler(void) {
             current->checking_wait = 0;
             current->total_wait_time += 1000 * (current->finish_wait.tv_sec - current->start_wait.tv_sec) + (current->finish_wait.tv_usec - current->start_wait.tv_usec) / 1000;
             if(current->response_checked == 0) {
-              fprintf(log_file,"2 %d-%ld / %ld\n",current->id,1000*current->finish_wait.tv_sec+current->finish_wait.tv_usec/1000,1000*current->start_job.tv_sec+current->start_job.tv_usec/1000);
+              // fprintf(log_file,"2 %d-%ld / %ld\n",current->id,1000*current->finish_wait.tv_sec+current->finish_wait.tv_usec/1000,1000*current->start_job.tv_sec+current->start_job.tv_usec/1000);
               current->response_time = 1000 * (current->finish_wait.tv_sec - current->on_line.tv_sec) + (current->finish_wait.tv_usec - current->on_line.tv_usec) / 1000;
               // current->response_time = 1000 * (current->finish_wait.tv_sec - current->start_job.tv_sec) + (current->finish_wait.tv_usec - current->start_job.tv_usec) / 1000;
               current->response_checked = 1;
@@ -95,16 +95,16 @@ int longtermscheduler(void) {
           }
           gettimeofday(&current->finish_job, NULL);
           current->total_run_time = 1000 * (current->finish_job.tv_sec - current->start_job.tv_sec) + (current->finish_job.tv_usec - current->start_job.tv_usec) / 1000;
-          fprintf(log_file,"-----------------------------PRINT %4.0d-----------------------------\n",++print_count);
-          fprintf(log_file,"JOB LIST\n");
+          fprintf(log_file,"-----------------------------PRINT %0.4d-----------------------------\n",print_count++);
+          fprintf(log_file,"- JOB LIST\n");
           printlist(JOBS_LIST);
 
-          fprintf(log_file,"READY QUEUE\n");
+          fprintf(log_file,"- READY QUEUE\n");
           printlist(READY_Q);
 
-          fprintf(log_file,"IO QUEUE\n");
+          fprintf(log_file,"- IO QUEUE\n");
           printlist(IO_Q);
-          fprintf(log_file,"--------------------------------------------------------------------\n");
+          fprintf(log_file,"--------------------------------------------------------------------\n\n\n\n");
           continue;
           // break;
         default:
@@ -226,7 +226,7 @@ void shorttermscheduler(void) { //Still needs a lot of work.
     }
 
     if(op_current->status == 0) {
-      fprintf(log_file,"NEW CPU OPERATION\n");
+      // fprintf(log_file,"NEW CPU OPERATION\n");
       READY_Q->process_state = ACTIVE;
       CURRENT_CPU_COUNT = 0;
       current = JOBS_LIST;
@@ -243,7 +243,7 @@ void shorttermscheduler(void) { //Still needs a lot of work.
         current->checking_wait = 0;
         current->total_wait_time += 1000 * (current->finish_wait.tv_sec - current->start_wait.tv_sec) + (current->finish_wait.tv_usec - current->start_wait.tv_usec) / 1000;
         if(current->response_checked == 0) {
-          fprintf(log_file,"3 %d-%ld / %ld\n",current->id,1000*current->finish_wait.tv_sec+current->finish_wait.tv_usec/1000,1000*current->start_job.tv_sec+current->start_job.tv_usec/1000);
+          // fprintf(log_file,"3 %d-%ld / %ld\n",current->id,1000*current->finish_wait.tv_sec+current->finish_wait.tv_usec/1000,1000*current->start_job.tv_sec+current->start_job.tv_usec/1000);
           current->response_time = 1000 * (current->finish_wait.tv_sec - current->on_line.tv_sec) + (current->finish_wait.tv_usec - current->on_line.tv_usec) / 1000;
           // current->response_time = 1000 * (current->finish_wait.tv_sec - current->start_job.tv_sec) + (current->finish_wait.tv_usec - current->start_job.tv_usec) / 1000;
           current->response_checked = 1;
@@ -251,16 +251,16 @@ void shorttermscheduler(void) { //Still needs a lot of work.
       }
       gettimeofday(&current->start_cpu, NULL);
       current->checking_cpu = 1;
-      fprintf(log_file,"-----------------------------PRINT %4.0d-----------------------------\n",++print_count);
-      fprintf(log_file,"JOB LIST\n");
+      fprintf(log_file,"-----------------------------PRINT %0.4d-----------------------------\n",print_count++);
+      fprintf(log_file,"- JOB LIST\n");
       printlist(JOBS_LIST);
 
-      fprintf(log_file,"READY QUEUE\n");
+      fprintf(log_file,"- READY QUEUE\n");
       printlist(READY_Q);
 
-      fprintf(log_file,"IO QUEUE\n");
+      fprintf(log_file,"- IO QUEUE\n");
       printlist(IO_Q);
-      fprintf(log_file,"--------------------------------------------------------------------\n");
+      fprintf(log_file,"--------------------------------------------------------------------\n\n\n\n");
     }
 
   }

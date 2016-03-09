@@ -143,8 +143,8 @@ typedef struct job {
 
 /* L I S T S */
 #define JOBS 0
-#define READY 1
-#define WAITING 2
+#define READY 1 //Repeated.
+#define WAITING 2 //Repeated.
 #define IO 3
 
 /* O P E R A T I O N   T Y P E S */
