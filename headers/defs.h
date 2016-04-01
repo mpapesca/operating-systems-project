@@ -51,6 +51,53 @@ typedef struct reg {
   struct reg *next;
 
 }reg_t;
+
+
+/* * * * * * * * * * * * * * * * * * * * * * * * *
+
+  TYPEDEF  resource_t
+
+  DISC      This struct is a node for holding the information about a single
+            opertation.
+
+  MEMBERS   id:  Unique identifying key of each operation per job.
+
+            type:  Type of operation being performed whether CPU or I/O.
+
+            duration: How much time the operation will require to be completed.
+
+            next: The pointer to the next operation in the list of operation.
+
+ * * * * * * * * * * * * * * * * * * * * * * * * */
+typedef struct resource {
+
+  int32_t id;
+  int16_t type;
+  int8_t status; //0-FREE, 1-REQUESTED, 2-CLAIMED.
+
+  struct resource *next;
+
+}resource_t;
+
+typedef struct resource_instance {
+  int32_t id;
+  int8_t status; //0-FREE, 1-CLAIMED.
+
+  struct resource_instance * next;
+
+} resource_instance_t;
+
+typedef struct system_resource {
+
+  int32_t type;
+  int32_t count;
+  resource_instance_t * instances;
+
+  struct system_resource * next;
+
+} system_resource_t;
+
+
 /* * * * * * * * * * * * * * * * * * * * * * * * *
 
   TYPEDEF  job_t
@@ -87,6 +134,8 @@ typedef struct reg {
 typedef struct job {
 
   int32_t id;
+  int32_t arrival_time;
+  int32_t priority;
   int32_t process_state;
   int32_t process_num;
   int32_t prog_count;
@@ -95,6 +144,9 @@ typedef struct job {
   int32_t num_regs;
   reg_t *registers;
   int32_t num_ops;
+  operation_t * operations;
+  int32_t num_resources;
+  resource_t * resources;
 
   //These are for timing measurements
   struct timeval start_job;
@@ -120,7 +172,6 @@ typedef struct job {
 
 
 
-  operation_t * operations;
   uint8_t ** open_files;
 
   struct job *next;
@@ -131,8 +182,13 @@ typedef struct job {
 /*** G E N E R A L   D E F I N I T I O N S ***/
 
 /* F I L E   O P E R A T I O N S */
-#define MOVE_FILE "cp docs/job_info_bu.txt docs/job_info.txt"
-#define FILE_PATH "docs/job_info.txt"
+#define MOVE_JOB_FILE "cp docs/job_info_bu.txt docs/job_info.txt"
+#define JOB_FILE "docs/job_info.txt"
+#define CONFIG_FILE "docs/config.txt"
+#define RESOURCE_FILE "docs/resource_list.txt"
+
+/* S Y S T E M   F L A G S */
+#define DEBUG_MODE 1
 
 /* P R O C E S S   S T A T E S */
 #define BUSY 0
@@ -151,3 +207,16 @@ typedef struct job {
 #define CPU_OP 0
 #define IO_OP 1
 #define OP_FIN 2
+
+/* R E S O U R C E   S T A T U S   S T A T E S */
+#define FREE 0
+#define REQUESTED 1
+#define CLAIMED 2
+
+/* S C H E D U L I N G   O P T I O N S */
+#define FCFS 0
+#define SJF 1
+#define PRIORITY_NPRE 2
+#define PRIORITY_PRE 3
+#define RR 4
+// #define RR_NPRE 5

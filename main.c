@@ -8,6 +8,7 @@
 #include <sys/time.h>
 #include "headers/defs.h"
 #include "headers/global.h"
+#include "headers/printout.h"
 #include "headers/node_operations.h"
 #include "headers/prog_operations.h"
 #include "headers/scheduler.h"
@@ -19,23 +20,50 @@ int main(void) {
 
   start();
 
+  loadconfig();
+  printconfig();
+  loadresources();
+  printresources();
   loadjobfile();
   loadjobs();
 
-  fprintf(log_file,"-----------------------------PRINT %0.4d-----------------------------\n",print_count++);
-  fprintf(log_file,"- JOB LIST\n");
+  sprintf(print_string,"-----------------------------PRINT %0.4d-----------------------------\n",print_count++);
+  printout(log_file,print_string);
+  sprintf(print_string,"- JOB LIST\n");
+  printout(log_file,print_string);
   printlist(JOBS_LIST);
 
-  fprintf(log_file,"- READY QUEUE\n");
+  sprintf(print_string,"- READY QUEUE\n");
+  printout(log_file,print_string);
   printlist(READY_Q);
 
-  fprintf(log_file,"- IO QUEUE\n");
+  sprintf(print_string,"- IO QUEUE\n");
+  printout(log_file,print_string);
   printlist(IO_Q);
-  fprintf(log_file,"--------------------------------------------------------------------\n\n\n\n");
+  sprintf(print_string,"--------------------------------------------------------------------\n\n\n\n");
+  printout(log_file,print_string);
+
 
   while(1) {
+    switch(SCHEDULING) {
+      case FCFS:
+        OP_FINISHED = longtermscheduler_fcfs(); //Working
+        break;
+      case SJF:
+        OP_FINISHED = longtermscheduler_sjf(); //Not Working
+        break;
+      case PRIORITY_NPRE:
+        OP_FINISHED = longtermscheduler_priority_npre(); //Not Working
+        break;
+      case PRIORITY_PRE:
+        OP_FINISHED = longtermscheduler_priority_pre(); //Not Working
+        break;
+      case RR
+        OP_FINISHED = longtermscheduler_rr(); //Not Working
+        break;
+    }
 
-    if(longtermscheduler()){
+    if(OP_FINISHED) {
       break;
     }
 
@@ -44,6 +72,8 @@ int main(void) {
     opcpu();
 
     opio();
+
+    // cycle();
   }
 
   stop();

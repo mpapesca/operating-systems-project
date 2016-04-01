@@ -1,0 +1,2 @@
+0 printer 3
+1 tape   2

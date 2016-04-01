@@ -1,0 +1,5 @@
+MainMemory: 16000000
+ResourceTypes: 2
+TimeQuantum: 5
+Scheduling: 1
+Preemptive: false
